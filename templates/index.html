@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    .hide{
+        float: right;
+    }
+    .post{
+        background-color: #4A90E2;
+        padding: 20px;
+        margin: 10px;
+    }
+    body {
+        padding-bottom: 50px;
+    }
+    </style>
+    <title>Posts</title>
+    <script content="text/javascript">
+    //first post
+    let counter = 1;
+
+    //load 20 posts at the time
+    const quantity =20;
+
+    // when the content loads
+    document.addEventListener('DOMContentLoaded', load);
+
+    window.onscroll = () => {
+        if(window.innerHeight + window.scrollY >= document.body.offsetHeight){
+            load();
+        }
+    };
+
+    function load(){
+        //set start, post number and update counter
+        const start = counter;
+        const end = start + quantity - 1 ;
+        counter = end + 1;
+
+        //open new request to get new posts
+        const request = new XMLHttpRequest();
+        request.open('POST', '/posts')
+        request.onload = () => {
+            const data = JSON.parse(request.responseText);
+            data.forEach(add_post);
+        };
+
+        //add start and end points to request data
+        const data = new FormData();
+        data.append('start', start);
+        data.append('end', end);
+
+        //send request
+        request.send(data);
+    }
+
+    function add_post(contents) {
+        //create new post
+        const post = document.createElement('div');
+        post.className = 'post';
+        post.innerHTML = contents;
+
+        //add button to hide post
+        const hide = document.createElement('button');
+        hide.className = 'hide';
+        hide.innerHTML = 'Hide';
+        post.append(hide);
+
+        //when hide button is clicked remove post
+        hide.onclick = function(){
+            this.parentElement.remove();
+        };
+
+        //add post to DOM
+        document.querySelector('#posts').append(post);
+    }
+    </script>
+</head>
+<body>
+    <div id="posts">
+    </div>
+</body>
+</html>
