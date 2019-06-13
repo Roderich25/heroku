@@ -1,20 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-    .hide{
-        float: right;
+    <style>
+    @keyframes hide{
+        0%{
+            opacity: 1;
+            height: 100%;
+            line-height: 100%;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+        75%{
+            opacity: 0;
+            height: 100%;
+            line-height: 100%;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+        100%{
+            opacity: 0;
+            height: 0px;
+            line-height: 0px;
+            padding: 0px;
+            margin-bottom: 0px;
+        }
     }
-    .post{
-        background-color: #4A90E2;
-        padding: 20px;
-        margin: 10px;
-    }
-    body {
-        padding-bottom: 50px;
+
+    #post{
+        animation-name: hide;
+        animation-duration: 1s;
+        animation-fill-mode: forwards;
+        animation-play-state: paused;
     }
     </style>
     <title>Posts</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
     <script content="text/javascript">
     //first post
     let counter = 1;
@@ -30,6 +53,16 @@
             load();
         }
     };
+
+    document.addEventListener('click', event => {
+        const element = event.target;
+        if(element.className === 'close'){
+            element.parentElement.style.animationPlayState = 'running';
+            element.parentElement.addEventListener('animationend',() => {
+                element.parentElement.remove();
+            });
+        }
+    });
 
     function load(){
         //set start, post number and update counter
@@ -57,19 +90,21 @@
     function add_post(contents) {
         //create new post
         const post = document.createElement('div');
-        post.className = 'post';
+        post.className = 'alert alert-primary alert-dismissible fade show';
+        post.role = 'alert';
+        post.id = 'post';
         post.innerHTML = contents;
 
         //add button to hide post
         const hide = document.createElement('button');
-        hide.className = 'hide';
-        hide.innerHTML = 'Hide';
+        hide.className = 'close';
+        hide.innerHTML = '&times;';
         post.append(hide);
 
         //when hide button is clicked remove post
-        hide.onclick = function(){
-            this.parentElement.remove();
-        };
+        //hide.onclick = function(){
+        //    this.parentElement.remove();
+        //};
 
         //add post to DOM
         document.querySelector('#posts').append(post);
